@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>【给你的惊喜】重要通知</title> 
+    <title>【給你的驚喜】重要通知</title> 
     <style>
         /* CSS for the initial serious look */
         body {
@@ -19,7 +19,7 @@
             text-align: center;
             transition: background-color 0.5s ease;
             overflow: hidden; 
-            cursor: pointer; /* 提示用户可以点击 */
+            cursor: pointer; /* 提示用戶可以點擊 */
         }
 
         .container {
@@ -59,9 +59,9 @@
             font-size: 0.9em;
         }
 
-        /* 提示点击区域的样式 */
+        /* 提示點擊區域的樣式 */
         .tap-prompt {
-            color: #2ecc71; /* 绿色提示 */
+            color: #2ecc71; 
             font-weight: bold;
             margin-top: 30px;
             font-size: 1.1em;
@@ -86,7 +86,6 @@
         }
 
         .prank-content {
-            /* 使用 visibility/opacity 确保不遮挡点击区域 */
             visibility: hidden; 
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -99,12 +98,13 @@
             background-color: #000; 
             color: white;
             flex-direction: column;
-            justify-content: center;
+            /* 關鍵：將內容對齊到頂部，以便騰出底部空間給按鈕 */
+            justify-content: flex-start; 
             align-items: center;
             z-index: 99; 
             padding: 20px; 
             box-sizing: border-box;
-            cursor: default; /* 弹窗出来后恢复默认光标 */
+            cursor: default; 
         }
 
         .prank-content.active {
@@ -116,6 +116,7 @@
         .prank-content h2 {
             font-size: 2.5em;
             color: #ffe53b; 
+            margin-top: 50px; /* 增加頂部間距 */
             margin-bottom: 20px;
             text-shadow: 0 0 10px rgba(255, 255, 0, 0.8);
             text-align: center;
@@ -127,6 +128,8 @@
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
             object-fit: contain; 
+            /* 關鍵：使用 auto 邊距將後續元素（按鈕）推到最底部 */
+            margin-bottom: auto; 
         }
         
         .prank-content p {
@@ -145,8 +148,9 @@
             font-size: 1.1em;
             cursor: pointer;
             margin-top: 40px; 
+            /* 關鍵：設置底部安全邊距，確保手機底部可見 */
+            margin-bottom: 50px; 
             transition: background-color 0.3s ease, transform 0.1s ease;
-            /* 关键修复：确保按钮在最上层，避免被微信中的幽灵层遮挡 */
             position: relative; 
             z-index: 101; 
         }
@@ -155,31 +159,31 @@
 <body>
 
     <div class="container" id="initial-screen">
-        <h1>【紧急】系统效率监控报告</h1>
+        <h1>【緊急】系統效率監控報告</h1>
         
-        <p>系统正在识别您的工位状态与摸鱼系数，**请勿中断扫描**。</p>
+        <p>系統正在識別您的工位狀態與摸魚係數，**請勿中斷掃描**。</p>
 
         <div class="progress-bar">
             <div class="progress"></div>
         </div>
 
         <div class="progress-text">
-            扫描进度：99% (已锁定 1 处异常行为)
+            掃描進度：99% (已鎖定 1 處異常行為)
         </div>
         
         <div id="scan-button" class="tap-prompt">
-            点击屏幕任意位置继续扫描...
+            點擊螢幕任意位置繼續掃描...
         </div>
     </div>
 
     <div class="prank-content" id="prank-screen">
-        <h2>【警告】摸鱼行为已锁定！</h2>
+        <h2>【警告】摸魚行為已鎖定！</h2>
         
-        <img id="prank-image" alt="摸鱼被抓">
+        <img id="prank-image" alt="摸魚被抓">
         
-        <p>⚡️ 老板：你最好把手机收起来，看看谁在看你？⚡️</p>
+        <p>⚡️ 老闆：你最好把手機收起來，看看誰在看你？⚡️</p>
         
-        <button id="reset-button" class="reset-button">解除警报并继续摸鱼</button>
+        <button id="reset-button" class="reset-button">解除警報並繼續摸魚</button>
     </div>
 
     <script>
@@ -190,54 +194,50 @@
             const body = document.body; 
             
             // ----------------------------------------------------
-            // ✅ 关键素材链接 
+            // ✅ 關鍵素材連結 
             // ----------------------------------------------------
+            // 注意：如果您的 GIF 名稱不是 '5.gif'，請修改這裡
             const MEME_GIF_URL = "https://raw.githubusercontent.com/1uck99ir1/-/62f57a57ceff828f2ff466472e25dbc7ba14defb/5.gif"; 
             // ----------------------------------------------------
             
             document.getElementById('prank-image').src = MEME_GIF_URL;
 
-            // 1. 绑定屏幕点击事件 (THE PRANK)
-            // { once: true } 确保只触发一次
+            // 1. 綁定螢幕點擊事件 (THE PRANK)
             body.addEventListener('click', handlePrank, { once: true });
             body.addEventListener('touchstart', handlePrank, { once: true });
 
             function handlePrank(event) {
-                // 如果已经激活，则忽略点击
                 if (prankScreen.classList.contains('active')) {
                     return; 
                 }
                 event.preventDefault();
 
-                // 隐藏初始界面
                 initialScreen.style.display = 'none';
                 
-                // 切换到闪烁背景 (视觉冲击)
                 body.classList.add('prank-mode');
 
-                // 显示恶搞内容
                 prankScreen.classList.add('active');
             }
 
-            // 2. 处理重置按钮
+            // 2. 處理重置按鈕
             if (resetButton) {
                 resetButton.addEventListener('click', handleReset);
                 resetButton.addEventListener('touchstart', handleReset);
             }
 
             function handleReset(event) {
-                // 关键修复：阻止事件冒泡，防止被父元素拦截点击，确保按钮在微信中可点
+                // 關鍵修復：阻止事件冒泡，確保按鈕在微信中可點
                 event.stopPropagation(); 
                 event.preventDefault();
                 
-                // 移除闪烁背景
+                // 移除閃爍背景
                 body.classList.remove('prank-mode');
 
-                // 替换为最终的友好信息
+                // 替換為最終的友好資訊
                 prankScreen.innerHTML = `
-                    <h2 style="color: #2ecc71;">摸鱼警报已解除！</h2>
-                    <p style="font-size:1.5em; color: #fff; margin-top: 30px;">恭喜你，今日份摸鱼能量已释放！</p>
-                    <p style="margin-top: 30px; color: #ccc;">（现在你可以把这个网址发给你的下一个朋友了！）</p>
+                    <h2 style="color: #2ecc71;">摸魚警報已解除！</h2>
+                    <p style="font-size:1.5em; color: #fff; margin-top: 30px;">恭喜你，今日份摸魚能量已釋放！</p>
+                    <p style="margin-top: 30px; color: #ccc;">（現在你可以把這個網址發給你的下一個朋友了！）</p>
                 `;
                 document.body.style.backgroundColor = '#2c3e50'; 
             }
