@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>【紧急】系统效率监控报告</title>
+    <title>【给你的惊喜】重要通知</title> 
     <style>
         /* CSS for the initial serious look */
         body {
@@ -19,6 +19,7 @@
             text-align: center;
             transition: background-color 0.5s ease;
             overflow: hidden; 
+            cursor: pointer; /* 提示用户可以点击 */
         }
 
         .container {
@@ -28,10 +29,12 @@
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 2; 
+            position: relative;
         }
 
         h1 {
-            color: #c0392b; /* Alert Red */
+            color: #c0392b; 
             font-size: 1.5em;
             margin-bottom: 25px;
         }
@@ -45,7 +48,7 @@
         }
 
         .progress {
-            width: 99%; /* Always 99% to build tension */
+            width: 99%; 
             height: 100%;
             background-color: #2980b9;
         }
@@ -56,27 +59,25 @@
             font-size: 0.9em;
         }
 
-        button {
-            background-color: #2ecc71; /* Green CTA */
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-size: 1.1em;
-            cursor: pointer;
+        /* 提示点击区域的样式 */
+        .tap-prompt {
+            color: #2ecc71; /* 绿色提示 */
+            font-weight: bold;
             margin-top: 30px;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-            z-index: 1001; 
+            font-size: 1.1em;
+            animation: pulse-text 1.5s infinite;
         }
-
-        button:active {
-            transform: scale(0.98);
+        
+        @keyframes pulse-text {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
 
         /* CSS for the "Prank" stage */
         .prank-mode {
-            background-color: #ff33ff !important; /* Fluorescent Pink */
-            animation: pulse 0.5s infinite alternate; /* 快速闪烁效果 */
+            background-color: #ff33ff !important; 
+            animation: pulse 0.5s infinite alternate; 
         }
 
         @keyframes pulse {
@@ -85,29 +86,35 @@
         }
 
         .prank-content {
-            display: none;
+            visibility: hidden; 
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #000; /* 纯黑背景突出GIF */
+            background-color: #000; 
             color: white;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 99; 
             padding: 20px; 
             box-sizing: border-box;
+            cursor: default; /* 弹窗出来后恢复默认光标 */
         }
 
         .prank-content.active {
-            display: flex;
+            visibility: visible;
+            opacity: 1;
+            z-index: 100; 
         }
 
         .prank-content h2 {
             font-size: 2.5em;
-            color: #ffe53b; /* Yellow/Gold text */
+            color: #ffe53b; 
             margin-bottom: 20px;
             text-shadow: 0 0 10px rgba(255, 255, 0, 0.8);
             text-align: center;
@@ -129,8 +136,17 @@
         }
         
         .reset-button {
-            margin-top: 40px;
-            background-color: #e74c3c; /* Red for reset */
+            background-color: #e74c3c; 
+            /* 使用与上面 button 相同的样式，但颜色不同 */
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 40px; 
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            z-index: 1001; 
         }
     </style>
 </head>
@@ -148,8 +164,10 @@
         <div class="progress-text">
             扫描进度：99% (已锁定 1 处异常行为)
         </div>
-
-        <button id="scan-button">确认继续扫描</button>
+        
+        <div id="scan-button" class="tap-prompt">
+            点击屏幕任意位置继续扫描...
+        </div>
     </div>
 
     <div class="prank-content" id="prank-screen">
@@ -164,49 +182,63 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const scanButton = document.getElementById('scan-button');
-            const resetButton = document.getElementById('reset-button');
             const initialScreen = document.getElementById('initial-screen');
             const prankScreen = document.getElementById('prank-screen');
+            const resetButton = document.getElementById('reset-button');
+            const body = document.body; // 绑定到 body 元素
             
             // ----------------------------------------------------
-            // ✅ 关键素材链接 (只保留 GIF)
+            // ✅ 关键素材链接 
             // ----------------------------------------------------
             const MEME_GIF_URL = "https://raw.githubusercontent.com/1uck99ir1/-/62f57a57ceff828f2ff466472e25dbc7ba14defb/5.gif"; 
             // ----------------------------------------------------
             
-            // 设置 GIF 链接
             document.getElementById('prank-image').src = MEME_GIF_URL;
 
-            // 1. 处理点击事件 (THE PRANK)
-            if (scanButton) {
-                scanButton.addEventListener('click', () => {
-                    // 隐藏严肃界面
-                    initialScreen.style.display = 'none';
-                    
-                    // 切换到闪烁背景 (视觉冲击)
-                    document.body.classList.add('prank-mode');
+            // 1. 绑定屏幕点击事件 (THE PRANK)
+            // 点击 body 上的任何位置都会触发
+            body.addEventListener('click', handlePrank, { once: true });
+            body.addEventListener('touchstart', handlePrank, { once: true });
 
-                    // 显示恶搞内容
-                    prankScreen.classList.add('active');
-                });
+            function handlePrank(event) {
+                // 确保只在初始屏幕可见时触发
+                if (prankScreen.classList.contains('active')) {
+                    return; 
+                }
+
+                // 阻止默认行为
+                event.preventDefault();
+
+                // 隐藏初始界面
+                initialScreen.style.display = 'none';
+                
+                // 切换到闪烁背景 (视觉冲击)
+                body.classList.add('prank-mode');
+
+                // 显示恶搞内容
+                prankScreen.classList.add('active');
             }
 
             // 2. 处理重置按钮
             if (resetButton) {
-                resetButton.addEventListener('click', () => {
-                    // 移除闪烁背景
-                    document.body.classList.remove('prank-mode');
+                // 绑定 click 和 touchstart
+                resetButton.addEventListener('click', handleReset);
+                resetButton.addEventListener('touchstart', handleReset);
+            }
 
-                    // 替换为最终的友好信息
-                    prankScreen.innerHTML = `
-                        <h2 style="color: #2ecc71;">摸鱼警报已解除！</h2>
-                        <p style="font-size:1.5em; color: #fff; margin-top: 30px;">恭喜你，今日份摸鱼能量已释放！</p>
-                        <p style="margin-top: 30px; color: #ccc;">（现在你可以把这个网址发给你的下一个朋友了！）</p>
-                    `;
-                    // 设置一个最终背景色
-                    document.body.style.backgroundColor = '#2c3e50'; 
-                });
+            function handleReset(event) {
+                event.preventDefault();
+                
+                // 移除闪烁背景
+                body.classList.remove('prank-mode');
+
+                // 替换为最终的友好信息
+                prankScreen.innerHTML = `
+                    <h2 style="color: #2ecc71;">摸鱼警报已解除！</h2>
+                    <p style="font-size:1.5em; color: #fff; margin-top: 30px;">恭喜你，今日份摸鱼能量已释放！</p>
+                    <p style="margin-top: 30px; color: #ccc;">（现在你可以把这个网址发给你的下一个朋友了！）</p>
+                `;
+                body.style.backgroundColor = '#2c3e50'; 
             }
         });
     </script>
