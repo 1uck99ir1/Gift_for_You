@@ -10,16 +10,25 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f7f9;
             color: #333;
+            /* 關鍵：允許內容滾動 */
+            display: block; 
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            transition: background-color 0.5s ease;
+            cursor: default; 
+        }
+        
+        /* 設置一個較高的 body 高度，確保可以滾動 */
+        /* 讓初始內容顯示在中間 */
+        .page-wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            min-height: 150vh; /* 設置一個足夠滾動的長度 */
             padding: 20px;
-            text-align: center;
-            transition: background-color 0.5s ease;
-            overflow: hidden; 
-            cursor: pointer; 
+            box-sizing: border-box;
         }
 
         .container {
@@ -31,6 +40,8 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             z-index: 2; 
             position: relative;
+            /* 讓容器在中間位置 */
+            margin-top: -25vh; 
         }
 
         h1 {
@@ -59,13 +70,15 @@
             font-size: 0.9em;
         }
 
-        /* 提示點擊區域的樣式 */
-        .tap-prompt {
+        /* 提示下滑區域的樣式 */
+        .scroll-prompt {
             color: #2ecc71; 
             font-weight: bold;
             margin-top: 30px;
-            font-size: 1.1em;
+            font-size: 1.2em;
             animation: pulse-text 1.5s infinite;
+            /* 視覺引導：箭頭 */
+            margin-bottom: 50px; 
         }
         
         @keyframes pulse-text {
@@ -86,7 +99,7 @@
         }
 
         .prank-content {
-            /* 修正：使用 visibility/opacity 確保不遮擋點擊區域 */
+            /* 保持絕對定位和隱藏狀態 */
             visibility: hidden; 
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -99,7 +112,6 @@
             background-color: #000; 
             color: white;
             flex-direction: column;
-            /* 讓內容居中，按鈕使用絕對定位 */
             justify-content: center; 
             align-items: center;
             z-index: 99; 
@@ -117,7 +129,6 @@
         .prank-content h2 {
             font-size: 2.5em;
             color: #ffe53b; 
-            /* 調整間距，為固定底部的按鈕騰出空間 */
             margin-top: 0; 
             margin-bottom: 80px; 
             text-shadow: 0 0 10px rgba(255, 255, 0, 0.8);
@@ -149,36 +160,37 @@
             font-size: 1.1em;
             cursor: pointer;
             
-            /* 關鍵修復：使用絕對定位固定按鈕位置 */
+            /* 保持絕對定位，解決底部遮擋 */
             position: absolute; 
-            bottom: 50px; /* 距離底部 50px 的安全距離 */
-            left: 50%; /* 水平居中 */
-            transform: translateX(-50%); /* 確保完美居中 */
+            bottom: 50px; 
+            left: 50%; 
+            transform: translateX(-50%); 
             
-            z-index: 101; /* 確保按鈕在最頂層 */
-            
+            z-index: 101; 
             margin: 0; 
             transition: background-color 0.3s ease, transform 0.1s ease;
         }
     </style>
 </head>
 <body>
+    
+    <div class="page-wrapper">
+        <div class="container" id="initial-screen">
+            <h1>【緊急】系統效率監控報告</h1>
+            
+            <p>系統正在識別您的工位狀態與摸魚係數，**請勿中斷掃描**。</p>
 
-    <div class="container" id="initial-screen">
-        <h1>【緊急】系統效率監控報告</h1>
-        
-        <p>系統正在識別您的工位狀態與摸魚係數，**請勿中斷掃描**。</p>
+            <div class="progress-bar">
+                <div class="progress"></div>
+            </div>
 
-        <div class="progress-bar">
-            <div class="progress"></div>
-        </div>
-
-        <div class="progress-text">
-            掃描進度：99% (已鎖定 1 處異常行為)
-        </div>
-        
-        <div id="scan-button" class="tap-prompt">
-            點擊螢幕任意位置繼續掃描...
+            <div class="progress-text">
+                掃描進度：99% (已鎖定 1 處異常行為)
+            </div>
+            
+            <div id="scan-button" class="scroll-prompt">
+                ⬇️ 下滑繼續掃描... ⬇️
+            </div>
         </div>
     </div>
 
@@ -206,34 +218,56 @@
             // ----------------------------------------------------
             
             document.getElementById('prank-image').src = MEME_GIF_URL;
+            
+            let prankTriggered = false;
 
-            // 1. 綁定螢幕點擊事件 (THE PRANK)
-            body.addEventListener('click', handlePrank, { once: true });
-            body.addEventListener('touchstart', handlePrank, { once: true });
+            // 1. 綁定下滑事件 (THE PRANK)
+            window.addEventListener('scroll', handlePrank, { passive: true });
 
-            function handlePrank(event) {
-                if (prankScreen.classList.contains('active')) {
+            function handlePrank() {
+                // 檢查是否已經觸發過，並且是否有滾動發生 (scrollTop > 0)
+                if (prankTriggered || window.scrollY === 0) {
                     return; 
                 }
-                event.preventDefault();
+                
+                prankTriggered = true;
+                
+                // 移除滾動監聽器，防止重複觸發
+                window.removeEventListener('scroll', handlePrank);
 
+                // 隱藏初始界面
                 initialScreen.style.display = 'none';
                 
+                // 隱藏整個 page-wrapper 的滾動條
+                document.querySelector('.page-wrapper').style.display = 'none';
+
+                // 滾動條歸零 (視覺上保持固定)
+                window.scrollTo(0, 0); 
+                
+                // 鎖定 body 滾動 (防止在惡搞界面繼續滾動)
+                body.style.overflow = 'hidden';
+
+                // 切换到閃爍背景 (視覺衝擊)
                 body.classList.add('prank-mode');
 
+                // 顯示惡搞內容
                 prankScreen.classList.add('active');
             }
 
             // 2. 處理重置按鈕
             if (resetButton) {
+                // 使用 click 和 touchstart，確保移動端交互兼容性
                 resetButton.addEventListener('click', handleReset);
                 resetButton.addEventListener('touchstart', handleReset);
             }
 
             function handleReset(event) {
-                // 關鍵修復：阻止事件冒泡，確保按鈕在微信中可點
+                // 阻止事件冒泡和默認行為
                 event.stopPropagation(); 
                 event.preventDefault();
+                
+                // 恢復 body 滾動
+                body.style.overflow = '';
                 
                 // 移除閃爍背景
                 body.classList.remove('prank-mode');
