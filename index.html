@@ -86,6 +86,7 @@
         }
 
         .prank-content {
+            /* 使用 visibility/opacity 确保不遮挡点击区域 */
             visibility: hidden; 
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -137,7 +138,6 @@
         
         .reset-button {
             background-color: #e74c3c; 
-            /* 使用与上面 button 相同的样式，但颜色不同 */
             color: white;
             border: none;
             padding: 12px 25px;
@@ -146,7 +146,9 @@
             cursor: pointer;
             margin-top: 40px; 
             transition: background-color 0.3s ease, transform 0.1s ease;
-            z-index: 1001; 
+            /* 关键修复：确保按钮在最上层，避免被微信中的幽灵层遮挡 */
+            position: relative; 
+            z-index: 101; 
         }
     </style>
 </head>
@@ -185,7 +187,7 @@
             const initialScreen = document.getElementById('initial-screen');
             const prankScreen = document.getElementById('prank-screen');
             const resetButton = document.getElementById('reset-button');
-            const body = document.body; // 绑定到 body 元素
+            const body = document.body; 
             
             // ----------------------------------------------------
             // ✅ 关键素材链接 
@@ -196,17 +198,15 @@
             document.getElementById('prank-image').src = MEME_GIF_URL;
 
             // 1. 绑定屏幕点击事件 (THE PRANK)
-            // 点击 body 上的任何位置都会触发
+            // { once: true } 确保只触发一次
             body.addEventListener('click', handlePrank, { once: true });
             body.addEventListener('touchstart', handlePrank, { once: true });
 
             function handlePrank(event) {
-                // 确保只在初始屏幕可见时触发
+                // 如果已经激活，则忽略点击
                 if (prankScreen.classList.contains('active')) {
                     return; 
                 }
-
-                // 阻止默认行为
                 event.preventDefault();
 
                 // 隐藏初始界面
@@ -221,12 +221,13 @@
 
             // 2. 处理重置按钮
             if (resetButton) {
-                // 绑定 click 和 touchstart
                 resetButton.addEventListener('click', handleReset);
                 resetButton.addEventListener('touchstart', handleReset);
             }
 
             function handleReset(event) {
+                // 关键修复：阻止事件冒泡，防止被父元素拦截点击，确保按钮在微信中可点
+                event.stopPropagation(); 
                 event.preventDefault();
                 
                 // 移除闪烁背景
@@ -238,7 +239,7 @@
                     <p style="font-size:1.5em; color: #fff; margin-top: 30px;">恭喜你，今日份摸鱼能量已释放！</p>
                     <p style="margin-top: 30px; color: #ccc;">（现在你可以把这个网址发给你的下一个朋友了！）</p>
                 `;
-                body.style.backgroundColor = '#2c3e50'; 
+                document.body.style.backgroundColor = '#2c3e50'; 
             }
         });
     </script>
