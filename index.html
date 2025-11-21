@@ -10,25 +10,19 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f7f9;
             color: #333;
-            /* 關鍵：允許內容滾動 */
-            display: block; 
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-            transition: background-color 0.5s ease;
-            cursor: default; 
-        }
-        
-        /* 設置一個較高的 body 高度，確保可以滾動 */
-        /* 讓初始內容顯示在中間 */
-        .page-wrapper {
+            /* 允許內容居中 */
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 150vh; /* 設置一個足夠滾動的長度 */
+            min-height: 100vh;
+            margin: 0;
             padding: 20px;
-            box-sizing: border-box;
+            text-align: center;
+            transition: background-color 0.5s ease;
+            /* 关键修改：取消锁定滚动 */
+            overflow-x: hidden; 
+            overflow-y: auto; 
+            cursor: pointer; 
         }
 
         .container {
@@ -40,52 +34,16 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             z-index: 2; 
             position: relative;
-            /* 讓容器在中間位置 */
-            margin-top: -25vh; 
         }
 
-        h1 {
-            color: #c0392b; 
-            font-size: 1.5em;
-            margin-bottom: 25px;
-        }
-
-        .progress-bar {
-            background-color: #ecf0f1;
-            border-radius: 5px;
-            margin: 20px 0;
-            height: 20px;
-            overflow: hidden;
-        }
-
-        .progress {
-            width: 99%; 
-            height: 100%;
-            background-color: #2980b9;
-        }
-
-        .progress-text {
-            color: #2c3e50;
-            margin-top: 15px;
-            font-size: 0.9em;
-        }
-
-        /* 提示下滑區域的樣式 */
-        .scroll-prompt {
-            color: #2ecc71; 
-            font-weight: bold;
-            margin-top: 30px;
-            font-size: 1.2em;
-            animation: pulse-text 1.5s infinite;
-            /* 視覺引導：箭頭 */
-            margin-bottom: 50px; 
-        }
-        
-        @keyframes pulse-text {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
+        /* ... (初始界面样式保持不变) ... */
+        h1 { color: #c0392b; font-size: 1.5em; margin-bottom: 25px; }
+        .progress-bar { background-color: #ecf0f1; border-radius: 5px; margin: 20px 0; height: 20px; overflow: hidden; }
+        .progress { width: 99%; height: 100%; background-color: #2980b9; }
+        .progress-text { color: #2c3e50; margin-top: 15px; font-size: 0.9em; }
+        .tap-prompt { color: #2ecc71; font-weight: bold; margin-top: 30px; font-size: 1.1em; animation: pulse-text 1.5s infinite; }
+        @keyframes pulse-text { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        @keyframes pulse { from { background-color: #ff33ff; } to { background-color: #cc00cc; } }
 
         /* CSS for the "Prank" stage */
         .prank-mode {
@@ -93,31 +51,32 @@
             animation: pulse 0.5s infinite alternate; 
         }
 
-        @keyframes pulse {
-            from { background-color: #ff33ff; }
-            to { background-color: #cc00cc; }
-        }
-
         .prank-content {
-            /* 保持絕對定位和隱藏狀態 */
-            visibility: hidden; 
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            
-            position: fixed;
+            /* 关键修改 1：恢复为绝对定位，以便覆盖第一页 */
+            position: absolute; 
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
+            /* 关键修改 2：强制容器高度大于屏幕，使其可滚动 */
+            min-height: 120vh; 
+            
             background-color: #000; 
             color: white;
             flex-direction: column;
-            justify-content: center; 
+            
+            /* 关键修改 3：允许内容对齐到顶部，以便按钮在底部 */
+            justify-content: flex-start; 
             align-items: center;
+            
             z-index: 99; 
             padding: 20px; 
             box-sizing: border-box;
             cursor: default; 
+            
+            /* 保持隐藏状态 */
+            visibility: hidden; 
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .prank-content.active {
@@ -129,8 +88,8 @@
         .prank-content h2 {
             font-size: 2.5em;
             color: #ffe53b; 
-            margin-top: 0; 
-            margin-bottom: 80px; 
+            margin-top: 50px; /* 顶部安全边距 */
+            margin-bottom: 20px; 
             text-shadow: 0 0 10px rgba(255, 255, 0, 0.8);
             text-align: center;
         }
@@ -141,7 +100,7 @@
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
             object-fit: contain; 
-            margin-bottom: 0; 
+            margin-bottom: 30px;
         }
         
         .prank-content p {
@@ -160,46 +119,46 @@
             font-size: 1.1em;
             cursor: pointer;
             
-            /* 保持絕對定位，解決底部遮擋 */
-            position: absolute; 
-            bottom: 50px; 
-            left: 50%; 
-            transform: translateX(-50%); 
+            /* 关键修改 4：恢复为流式布局，并在底部添加安全边距 */
+            position: relative; 
+            margin-top: 40px; 
+            margin-bottom: 80px; 
             
             z-index: 101; 
-            margin: 0; 
             transition: background-color 0.3s ease, transform 0.1s ease;
         }
     </style>
 </head>
 <body>
-    
-    <div class="page-wrapper">
-        <div class="container" id="initial-screen">
-            <h1>【緊急】系統效率監控報告</h1>
-            
-            <p>系統正在識別您的工位狀態與摸魚係數，**請勿中斷掃描**。</p>
 
-            <div class="progress-bar">
-                <div class="progress"></div>
-            </div>
+    <div class="container" id="initial-screen">
+        <h1>【緊急】系統效率監控報告</h1>
+        
+        <p>系統正在識別您的工位狀態與摸魚係數，**請勿中斷掃描**。</p>
 
-            <div class="progress-text">
-                掃描進度：99% (已鎖定 1 處異常行為)
-            </div>
-            
-            <div id="scan-button" class="scroll-prompt">
-                ⬇️ 下滑繼續掃描... ⬇️
-            </div>
+        <div class="progress-bar">
+            <div class="progress"></div>
+        </div>
+
+        <div class="progress-text">
+            掃描進度：99% (已鎖定 1 處異常行為)
+        </div>
+        
+        <div id="scan-button" class="tap-prompt">
+            點擊螢幕任意位置繼續掃描...
         </div>
     </div>
 
     <div class="prank-content" id="prank-screen">
+        <div style="flex-grow: 1; max-height: 50px;"></div>
+        
         <h2>【警告】摸魚行為已鎖定！</h2>
         
         <img id="prank-image" alt="摸魚被抓">
         
         <p>⚡️ 老闆：你最好把手機收起來，看看誰在看你？⚡️</p>
+        
+        <div style="height: 60vh;"></div> 
         
         <button id="reset-button" class="reset-button">解除警報並繼續摸魚</button>
     </div>
@@ -218,58 +177,37 @@
             // ----------------------------------------------------
             
             document.getElementById('prank-image').src = MEME_GIF_URL;
-            
-            let prankTriggered = false;
 
-            // 1. 綁定下滑事件 (THE PRANK)
-            window.addEventListener('scroll', handlePrank, { passive: true });
+            // 1. 綁定螢幕點擊事件 (THE PRANK)
+            body.addEventListener('click', handlePrank, { once: true });
+            body.addEventListener('touchstart', handlePrank, { once: true });
 
-            function handlePrank() {
-                // 檢查是否已經觸發過，並且是否有滾動發生 (scrollTop > 0)
-                if (prankTriggered || window.scrollY === 0) {
+            function handlePrank(event) {
+                if (prankScreen.classList.contains('active')) {
                     return; 
                 }
-                
-                prankTriggered = true;
-                
-                // 移除滾動監聽器，防止重複觸發
-                window.removeEventListener('scroll', handlePrank);
+                event.preventDefault();
 
-                // 隱藏初始界面
                 initialScreen.style.display = 'none';
                 
-                // 隱藏整個 page-wrapper 的滾動條
-                document.querySelector('.page-wrapper').style.display = 'none';
-
-                // 滾動條歸零 (視覺上保持固定)
-                window.scrollTo(0, 0); 
-                
-                // 鎖定 body 滾動 (防止在惡搞界面繼續滾動)
-                body.style.overflow = 'hidden';
-
-                // 切换到閃爍背景 (視覺衝擊)
                 body.classList.add('prank-mode');
 
-                // 顯示惡搞內容
                 prankScreen.classList.add('active');
+                
+                // 强制滚动到顶部 (视觉上从顶部开始)
+                window.scrollTo(0, 0); 
             }
 
             // 2. 處理重置按鈕
             if (resetButton) {
-                // 使用 click 和 touchstart，確保移動端交互兼容性
                 resetButton.addEventListener('click', handleReset);
                 resetButton.addEventListener('touchstart', handleReset);
             }
 
             function handleReset(event) {
-                // 阻止事件冒泡和默認行為
                 event.stopPropagation(); 
                 event.preventDefault();
                 
-                // 恢復 body 滾動
-                body.style.overflow = '';
-                
-                // 移除閃爍背景
                 body.classList.remove('prank-mode');
 
                 // 替換為最終的友好資訊
@@ -279,6 +217,8 @@
                     <p style="margin-top: 30px; color: #ccc;">（現在你可以把這個網址發給你的下一個朋友了！）</p>
                 `;
                 document.body.style.backgroundColor = '#2c3e50'; 
+                // 恢复滚动到顶部
+                window.scrollTo(0, 0);
             }
         });
     </script>
