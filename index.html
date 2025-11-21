@@ -19,7 +19,7 @@
             text-align: center;
             transition: background-color 0.5s ease;
             overflow: hidden; 
-            cursor: pointer; /* 提示用戶可以點擊 */
+            cursor: pointer; 
         }
 
         .container {
@@ -86,6 +86,7 @@
         }
 
         .prank-content {
+            /* 修正：使用 visibility/opacity 確保不遮擋點擊區域 */
             visibility: hidden; 
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -98,8 +99,8 @@
             background-color: #000; 
             color: white;
             flex-direction: column;
-            /* 關鍵：將內容對齊到頂部，以便騰出底部空間給按鈕 */
-            justify-content: flex-start; 
+            /* 讓內容居中，按鈕使用絕對定位 */
+            justify-content: center; 
             align-items: center;
             z-index: 99; 
             padding: 20px; 
@@ -116,8 +117,9 @@
         .prank-content h2 {
             font-size: 2.5em;
             color: #ffe53b; 
-            margin-top: 50px; /* 增加頂部間距 */
-            margin-bottom: 20px;
+            /* 調整間距，為固定底部的按鈕騰出空間 */
+            margin-top: 0; 
+            margin-bottom: 80px; 
             text-shadow: 0 0 10px rgba(255, 255, 0, 0.8);
             text-align: center;
         }
@@ -128,8 +130,7 @@
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
             object-fit: contain; 
-            /* 關鍵：使用 auto 邊距將後續元素（按鈕）推到最底部 */
-            margin-bottom: auto; 
+            margin-bottom: 0; 
         }
         
         .prank-content p {
@@ -147,12 +148,17 @@
             border-radius: 8px;
             font-size: 1.1em;
             cursor: pointer;
-            margin-top: 40px; 
-            /* 關鍵：設置底部安全邊距，確保手機底部可見 */
-            margin-bottom: 50px; 
+            
+            /* 關鍵修復：使用絕對定位固定按鈕位置 */
+            position: absolute; 
+            bottom: 50px; /* 距離底部 50px 的安全距離 */
+            left: 50%; /* 水平居中 */
+            transform: translateX(-50%); /* 確保完美居中 */
+            
+            z-index: 101; /* 確保按鈕在最頂層 */
+            
+            margin: 0; 
             transition: background-color 0.3s ease, transform 0.1s ease;
-            position: relative; 
-            z-index: 101; 
         }
     </style>
 </head>
@@ -196,7 +202,6 @@
             // ----------------------------------------------------
             // ✅ 關鍵素材連結 
             // ----------------------------------------------------
-            // 注意：如果您的 GIF 名稱不是 '5.gif'，請修改這裡
             const MEME_GIF_URL = "https://raw.githubusercontent.com/1uck99ir1/-/62f57a57ceff828f2ff466472e25dbc7ba14defb/5.gif"; 
             // ----------------------------------------------------
             
